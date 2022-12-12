@@ -4,6 +4,7 @@ namespace AgendaTutorialApi.Models.Enuns
     {
         Aluno = 1,
         Professor = 2,
-        Tutor = 3
+        Tutor = 3,
+        Admin = 4
     }
 }
