@@ -31,14 +31,63 @@ public class DisponibilidadesController : ControllerBase
             if(await DisponibilidadeExistente(novaDisponibilidade.DataDisponibilidade))
                throw new System.Exception("Disponibilidade já cadastrada!");
 
+            Usuario? u = await _context.Usuarios
+                .FirstOrDefaultAsync(uBusca => uBusca.Id == novaDisponibilidade.UsuarioId);
+            
+            if(u == null)
+                throw new System.Exception("Usuário não encontrado");
+
+            Disciplina? d = await _context.Disciplinas
+                .FirstOrDefaultAsync(d => d.Id == novaDisponibilidade.DisciplinaId);
+
+            if(d == null)
+                throw new System.Exception("Disciplina não encontrada.");
+
+            novaDisponibilidade.Usuario = u;
+            novaDisponibilidade.Disciplina = d;
+
             await _context.Disponibilidades.AddAsync(novaDisponibilidade);
             await _context.SaveChangesAsync();
 
             return Ok(novaDisponibilidade);  
+
+            
+
         }
         catch (System.Exception ex)
         {
             return BadRequest(ex.Message);
+        }
+    }
+
+        [HttpGet("GetAll")]
+    public async Task<IActionResult> GetAll()
+    {
+        try
+        {
+            List<Disponibilidade>? lista = await _context.Disponibilidades.ToListAsync();
+
+            return Ok(lista);
+        }
+        catch (System.Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+       [HttpGet("{id}")]
+    
+    public async Task<IActionResult> GetSingle(int id)
+    {
+        try
+        {
+            Disponibilidade? d = await _context.Disponibilidades.FirstOrDefaultAsync(dBusca => dBusca.Id == id);
+
+            return Ok(d);
+        }
+        catch (System.Exception ex)
+        {
+            return BadRequest(ex.Message);            
         }
     }
 
